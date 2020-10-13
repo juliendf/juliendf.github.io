@@ -2,19 +2,70 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Klanik tech blog</title>
+    
+    
+    
     <link>/posts/</link>
     <description>Recent content in Posts on Klanik tech blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 13 Oct 2020 17:54:02 +0200</lastBuildDate><atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 13 Oct 2020 17:54:02 +0200</lastBuildDate>
+    
+	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>APM en mode avec CI/CD avec sitespeed.io</title>
       <link>/posts/apm_cicd/</link>
       <pubDate>Tue, 13 Oct 2020 17:54:02 +0200</pubDate>
       
       <guid>/posts/apm_cicd/</guid>
-      <description>L’« Application Performance Management » couvre l’ensemble de la démarche visant à monitorer et améliorer la performance des sites et applications web. C’est donc une discipline importante à époque où le temps de chargement trop long d’une page peut ruiner la réputation ou le business d’une marque ou entreprise.
-J’ai présenté sitespeed.io, outil de test de la performance des sites web il y a quelques années déjà. Il vous suffit de (re)lire ce billet pour vous rendre compte de tout le bien que j’en pensais à l’époque.</description>
+      <description>
+        
+          
+          
+          
+        
+        
+        &lt;p&gt;L’« Application Performance Management » couvre l’ensemble de la démarche visant à monitorer et améliorer la performance des sites et applications web. C’est donc une discipline importante à époque où le temps de chargement trop long d’une page peut ruiner la réputation ou le business d’une marque ou entreprise.&lt;/p&gt;
+&lt;p&gt;J’ai présenté sitespeed.io, outil de test de la performance des sites web il y a quelques années déjà. Il vous suffit de (re)lire ce billet pour vous rendre compte de tout le bien que j’en pensais à l’époque. Et ça n’a pas changé; bien au contraire vu les nombreuses évolutions positives qu’a connu cet outil depuis.&lt;/p&gt;
+&lt;p&gt;Je vous propose dans ce qui pourrait être la suite du précédent billet d’automatiser les tests faits avec sitespeed.io et de voir quels sont les possibilités d’intégration dans une chaîne de CI/CD. A partir de là, il devient possible de tester une application ou site web:&lt;/p&gt;
+&lt;p&gt;A la façon GitOps, de façon automatique à la moindre modification du dépôt du code source applicatif.
+Dans un esprit plus « observabilité, monitoring », ordonnancer des contrôles à intervalles réguliers de l’application.
+Quoique ce soit votre préférence, il me paraît important de rappeler que le mode opératoire le plus pratique pour sitespeed.io est basé sur une image Docker et que c’est celui-ci que nous allons utiliser. Cela permet d’envisager l’automatisation des choses suivantes:&lt;/p&gt;
+&lt;p&gt;Démarrage d’un conteneur Docker à partir de l’image officielle sitespeed.io.
+Exécution du test sitespeed.io dans ce conteneur.
+Récupération des résultats.
+Destruction du conteneur Docker.
+CONFIGURATION DE SITESPEED.IO
+Il est possible de configurer sitespeed.io de deux façons différentes:&lt;/p&gt;
+&lt;p&gt;A partir d’options et arguments sur la ligne commande.
+A partir d’un fichier de configuration au format JSON.
+Nous privilégierons la deuxième méthode, le fichier JSON pouvant être facilement généré automatiquement depuis la description, le « blueprint » de l’application.&lt;/p&gt;
+&lt;p&gt;Configuration pour le CI/CD
+La liste des options de configuration de sitespeed.io est juste énorme et je ne compte pas vous les décrire toutes… Heureusement pour tout le monde! Nous allons juste parcourir les quelques options qui me semblent intéressantes à utiliser quand sitespeed.io est « opéré » en mode automatique.&lt;/p&gt;
+&lt;p&gt;Configuration S3
+Il est possible de stocker le rapport HTML généré par sitespeed.io dans un stockage compatible Amazon S3. Cette option est utile si vous souhaitez par exemple que les développeurs puissent avoir accès au détail d’un test réalisé. J’utilise Minio comme stockage compatible S3 et la configuration nécessaire pour que cela fonctionne avec sitespeed.io est la suivante:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; 
+{ &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;endpoint&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; 
+&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;http://192.168.1.7:9000&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»,&lt;/span&gt; 
+&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;bucketname&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;speedio&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»,&lt;/span&gt; 
+&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;removeLocalResult&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;true,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;key&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;miniouser&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;secret&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;miniopassword&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;options&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;s3ForcePathStyle&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;true,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;s3BucketEndpoint&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;true&lt;/span&gt; } &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Il est possible d’utiliser le module « Google Cloud Storage » pour arriver à un résultat identique.&lt;/p&gt;
+&lt;p&gt;Configuration Graphite
+Il paraît évident qu’une chaîne de CI/CD sans monitoring n’en est pas vraiment une… Mais ça va toujours mieux en le reprécisant 🙂 Dans ce scope, Graphite reste bien sûr un standard et nous allons donc utiliser le module correspondant pour pouvoir récupérer l’ensemble des métriques récoltées par sitepseedio au cours d’un test. Grafana permettra la visualisation des métriques récoltées. Voici la configuration du module Graphite:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;graphite&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; { &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;host&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;192.168.1.79&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;port&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;9109,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;includeQueryParams&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;false,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;arrayTags&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;false,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;namespace&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;«&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;speedio&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;»&lt;/span&gt; }&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;,&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;C’est une configuration minimale pour envoyer les métriques vers un serveur compatible Graphite mais vous pouvez aller beaucoup plus loin avec des tags, des annotations à disposition. Pour ma part, j’utilise plutôt Prometheus que Graphite et j’ai donc utilisé Graphite Exporter et ces possibilités de « mapping » pour arriver au même résultat qu’avec un serveur Graphite. Vous pouvez aussi utiliser InfluxDB en lieu et place de Graphite si tel est votre bon plaisir.&lt;/p&gt;
+&lt;p&gt;Autres options de configuration intéressantes
+Je n’ai pas encore mis en oeuvre les options de configuration suivantes mais il est possible, à l’instar du module Graphite vu plus haut, d’envoyer des annotations vers Grafana. Il est également possible de paramétrer un « budget performance » pour votre application. Et enfin, la toute nouvelle version 12 de sitespeed.io permet désormais de calculer l’impact écologique de votre application web.&lt;/p&gt;
+&lt;p&gt;INTÉGRATION CI/CD
+Une fois sitespeed.io configuré, il ne reste plus qu’à orchestrer le tout avec l’outil de votre choix; Ansible dans mon cas. Voici donc un playbook « quick and dirty » permettant de charger la liste des sites à tester depuis un fichier web.txt et de créer le conteneur Docker pour chacun. Notez l’appel au fichier de configuration avec &amp;ndash;config config.json. Un script bash aurait certainement pu faire l’affaire mais utiliser Ansible ou un équivalent permet de pouvoir paramétrer le tout finement et d’aller plus loin avec par exemple un fichier de configuration différent par application…&lt;/p&gt;
+&lt;p&gt;— – name: sitespeed.io docker run hosts: localhost connection: local gather_facts: no become: no vars: iso8601_date: « {{ lookup(‘pipe’, ‘date -u +%Y-%m-%dT%H:%M:%S+00:00’) }}«  root_dir: « {{ lookup(‘env’, ‘PWD’) }}«  tasks: – name: docker_container | check url from file ‘web.txt’ with sitespeed.io docker_container: name: « speedio_{{ site_idx }}«  image: sitespeedio/sitespeed.io:12.1.0 auto_remove: yes network_mode: bridge recreate: yes command: « {{ item }} –config config.json » env: https_proxy: «  » http_proxy: «  » volumes: – « {{ root_dir }}:/sitespeed.io » loop: « {{ lookup(‘file’, ‘./web.txt’).splitlines() }}«  loop_control: index_var: site_idx
+Ceci n’est bien sûr qu’une base Ansible à adapter à votre environnement, votre contexte. Il reste à intégrer ce playbook dans un pipeline CI/CD, que ce soit Jenkins, Gitlab, Github ou Drone. Il est également possible d’exécuter ce playbook à intervalles réguliers depuis Jenkins, Rundeck, AWX ou depuis votre logiciel de supervision.&lt;/p&gt;
+&lt;p&gt;En fonction de l’intégration choisie, il peut y avoir pas mal de travail annexe à faire comme la construction de tableaux de bord pour Grafana, un fichier de mapping pour Graphite Exporter… En guise de conclusion, les combinaisons envisageables sont très étendues.&lt;/p&gt;
+
+        
+        </description>
     </item>
     
     <item>
@@ -23,8 +74,45 @@ J’ai présenté sitespeed.io, outil de test de la performance des sites web il
       <pubDate>Tue, 13 Oct 2020 17:52:51 +0200</pubDate>
       
       <guid>/posts/introduction_au_serverless/</guid>
-      <description>Je tiens à préciser que dans cet article je parle de déploiement d’applications Web et de scripts d’automatisation, pas d’applications client lourdes.
-Le serverless Le serverless est une méthode permettant de déployer des morceaux d’application sans se soucier de l’infrastructure technique porteuse. Dans un déploiement classique (on parle là bien de legacy mais également de déploiements type Docker EE / Kubernetes), notre application est bundlée et doit être déployée sur un ou plusieurs serveurs.</description>
+      <description>
+        
+          
+          
+          
+        
+        
+        &lt;p&gt;Je tiens à préciser que dans cet article je parle de déploiement d’applications Web et de scripts d’automatisation, pas d’applications client lourdes.&lt;/p&gt;
+&lt;h1 id=&#34;le-serverless&#34;&gt;Le serverless&lt;/h1&gt;
+&lt;p&gt;Le serverless est une méthode permettant de déployer des morceaux d’application sans se soucier de l’infrastructure technique porteuse. Dans un déploiement classique (on parle là bien de legacy mais également de déploiements type Docker EE / Kubernetes), notre application est bundlée et doit être déployée sur un ou plusieurs serveurs. Ce processus peut être automatisé et la couche d’infrastructure un peu abstraite (coucou Kubernetes), mais le principe reste le même.&lt;/p&gt;
+&lt;p&gt;Dans une architecture serverless, l’application est « cassée » en modules, puis en fonctions, un peu comme dans un développement normal, mais encore plus. En effet, il va s’agir de déployer chaque fonction de notre programme individuellement.&lt;/p&gt;
+&lt;h1 id=&#34;le-fonctionnement-du-serverless-est-simple&#34;&gt;Le fonctionnement du serverless est simple&lt;/h1&gt;
+&lt;p&gt;Une fonction (et ses ressources et dépendances) réside sur un serveur d’exécution
+Un événement vient trigger la dite fonction
+Cette dernière s’exécute et éventuellement (mais pas forcément) produit un résultat
+Le résultat produit est retourné au déclencheur de l’évènement
+Cela peut paraître une idée saugrenue, mais une infrastructure serverless apporte énormément d’avantages stratégiques pour le développement et la maintenabilité d’une application :&lt;/p&gt;
+&lt;p&gt;Chaque fonction peut être écrite dans un langage propre, ce qui est un des gros points du serverless. Un projet aux multiples facettes, porteur de backend Javascript, de scripts d’automatisation Java, de scripts de maintenance Shell et d’outils de statistiques Python peut voir toutes ses fonctions réunies dans un seul projet.
+Chaque fonction peut être trigger par un ou plusieurs types d’événements, permettant de définir une fonction comme appelable par, par exemple, un appel http sur une URL définie, mais également un événement système, un appel RPC, et même, avec des intégrations plus poussées, un message Slack ou Discord, un événement de base de données, etc.
+Chaque fonction réside dans son propre environnement d’exécution, ce qui permet d’exécuter la même fonction dans plusieurs environnements, mais également de gérer la scalabilité de chaque fonction indépendamment, ce qui veut dire que si une fonction n’est pas utilisée, elle est tout simplement désinstanciée du serveur d’exécution (ce qui peut causer le problème du Cold Start, expliqué plus bas, mais fait qu’une fonction inutilisée ne vous coûte rien).
+En clair, votre équipe n’a plus besoin d’un cluster entier de machines pour déployer son projet, mais juste d’un provider serverless (comme AWS avec lambda), qui facturera simplement à l’utilisation.
+Votre équipe de développement n’a plus besoin de se soucier d’infrastructure, ce qui est un avantage considérable dans beaucoup de petites structures, mais également dans des grosses structures où les développeurs sont recrutés pour… eh bien développer (ce point a tendance à être négligé, croyez-moi).
+Le Time To Market est considérablement réduit, car lorsqu’une fonctionnalité est développée est testée, vous avez juste besoin de redéployer la ou les fonctions impactée(s), ce qui se fait généralement en une à deux commandes. La nouvelle version de la fonction est ensuite accessible à la place de l’ancienne, pour tous les triggers définis, pour tout le monde. Facile non ?
+Alors avec ça, pourquoi continuer à faire des applications classiques ? Eh bien le serverless, c’est bien, mais comme tout ce qui est bien et novateur, il vient également avec son lot de problématiques :&lt;/p&gt;
+&lt;p&gt;Il est plus compliqué de débugger et tester son application. Il est vrai que l’environnement de production est plus compliqué à reproduire pour le développement qu’avec admettons une image Docker ou un environnement JVM défini. Le fait que l’application soit cassée en plein de petites fonctions peut également être intimidant, mais c’est également un moyen de bien séparer les différentes logiques, donc chacun son avis.
+Les traitements longs n’ont pas leur place en serverless, de par son architecture, faite pour des processus courts qui se contentent de répondre rapidement à un événement. Les processus longs (quelques secondes à quelques minutes) coûteront cher (car facturés au temps d’exécution) et pire, risqueront de se voir interrompus avant la fin.
+La portabilité n’est pas toujours assurée, car le serverless ne se repose pas (pas souvent) sur une infrastructure maîtrisée par l’entreprise. Des outils pour réaliser différentes fonctions sont alors mises à disposition par le provider, et ces fonctions lui sont propres, ce qui rend notre compte dépendant du provider.
+Les performances de l’application peuvent être affectées, car, on le rappelle, chaque fonction tourne dans son propre environnement d’exécution, son propre « conteneur » pour faire un parallèle avec Docker ou k8s, et si une fonction n’est pas du tout utilisée, le provider va la scaller à 0 instances. C’est à la fois le plus gros avantage du serverless (car une fonction non utilisée ne coûte rien), mais son plus gros inconvénient, car si une fonction scallée à 0 est appelée, il lui faut le temps de démarrer. Ce temps est généralement court (quelques secondes tout au plus), mais il faut savoir qu’il existe.
+Pour information, ceci s’appelle sobrement le Cold Start.&lt;/p&gt;
+&lt;p&gt;Soyons clair, aucune de ces problématiques n’est insurmontable. Des moyens existent pour les contourner, et le jeu en vaut la chandelle.&lt;/p&gt;
+&lt;p&gt;Les outils du serverless
+Si le serverless vous intéresse, voici quelques outils, ressources et providers sur lesquelles vous devriez vous pencher :&lt;/p&gt;
+&lt;p&gt;com, framework serverless permettant d’accélérer le développement et d’émuler un environnement serverless (par exemple AWS, Azure, Google, Kubeless, etc.). Ils ont également un blog très complet et très actif qui parle de l’actualité du serverless
+Knative et Kubeless, deux outils permettant d’ajouter un aspect serverless à un cluster Kubernetes (vous connaissez mon amour pour k8s, j’ai testé les deux, je conseille les deux)
+Apache Openwhisk, un provider serverless opensource (à installer sur sa propre infrastructure)
+AWS Lambda, car après tout, actuellement, AWS, reste le provider préféré des entreprises qui se lancent dans l’aventure serverless&lt;/p&gt;
+
+        
+        </description>
     </item>
     
   </channel>
