@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Klanik tech blog</title>
+    <link>/</link>
+    <description>Recent content on Klanik tech blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 13 Oct 2020 17:54:02 +0200</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>APM en mode avec CI/CD avec sitespeed.io</title>
+      <link>/posts/apm_cicd/</link>
+      <pubDate>Tue, 13 Oct 2020 17:54:02 +0200</pubDate>
+      
+      <guid>/posts/apm_cicd/</guid>
+      <description>L’« Application Performance Management » couvre l’ensemble de la démarche visant à monitorer et améliorer la performance des sites et applications web. C’est donc une discipline importante à époque où le temps de chargement trop long d’une page peut ruiner la réputation ou le business d’une marque ou entreprise.
+J’ai présenté sitespeed.io, outil de test de la performance des sites web il y a quelques années déjà. Il vous suffit de (re)lire ce billet pour vous rendre compte de tout le bien que j’en pensais à l’époque.</description>
+    </item>
+    
+    <item>
+      <title>Introduction au serverless</title>
+      <link>/posts/introduction_au_serverless/</link>
+      <pubDate>Tue, 13 Oct 2020 17:52:51 +0200</pubDate>
+      
+      <guid>/posts/introduction_au_serverless/</guid>
+      <description>Je tiens à préciser que dans cet article je parle de déploiement d’applications Web et de scripts d’automatisation, pas d’applications client lourdes.
+Le serverless Le serverless est une méthode permettant de déployer des morceaux d’application sans se soucier de l’infrastructure technique porteuse. Dans un déploiement classique (on parle là bien de legacy mais également de déploiements type Docker EE / Kubernetes), notre application est bundlée et doit être déployée sur un ou plusieurs serveurs.</description>
+    </item>
+    
+  </channel>
+</rss>
